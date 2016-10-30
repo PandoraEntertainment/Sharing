@@ -1,0 +1,23 @@
+{
+	"FileVersion": 1,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "Sharing",
+	"Description": "This plugin enabling native sharing.",
+	"Category": "Sharing",
+	"CreatedBy": "Pandora Entertainment Ltd",
+	"CreatedByURL": "www.pandoraentertainment.co.uk",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"Modules": [
+		{
+			"Name": "Sharing",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"EnabledByDefault": false,
+	"CanContainContent": false,
+	"IsBetaVersion": false,
+	"Installed": false
+}

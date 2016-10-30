@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--GearVR plugin additions-->
+<root xmlns:android="http://schemas.android.com/apk/res/android">
+	<!-- init section is always evaluated once per architecture -->
+	<trace enable="true"/>
+	<init>
+		<log text="Sharing init"/>		
+	</init>
+
+
+  <androidManifestUpdates>
+    <addElements tag="application">
+      <!--<provider 
+      android:name="android.support.v4.content.FileProvider"
+      android:authorities="com.MyCompany.MyGame.fileprovider"
+      android:exported="false"
+      android:grantUriPermissions="true">
+       <meta-data
+        android:name="android.support.FILE_PROVIDER_PATHS"
+        android:resource="@xml/file_paths"/> 
+      </provider>-->
+    </addElements>   
+  </androidManifestUpdates>
+
+  <!-- optional additions to proguard -->
+  <proguardAdditions>
+    <insert>
+      <!-- -keep class com.oculus.** {
+   *;
+}
+-keep class android.app.** {
+   *;
+} -->
+
+     
+    </insert>
+  </proguardAdditions>
+
+  <!-- optional files or directories to copy to Intermediate/Android/APK -->
+  <resourceCopies>
+    <!-- Copy the generated resource file to be packaged 
+    <copyFile src="$S(PluginDir)/../../lib/Android/res/file_paths.xml" dst="$S(BuildDir)/res/xml/file_paths.xml" />-->
+   
+  </resourceCopies>
+
+  <!-- optional additions to the GameActivity imports in GameActivity.java -->
+  <gameActivityImportAdditions>
+    <insert>
+      import java.io.FileOutputStream;
+      import java.io.File;
+      import android.net.Uri;
+      import android.os.Environment;
+      import android.graphics.Bitmap;
+      //import android.content.*;
+      //import android.content.ContentProvider;
+      import android.support.v4.content.FileProvider;
+    </insert>
+  </gameActivityImportAdditions>
+
+
+  <!-- optional additions to the GameActivity class in GameActivity.java -->
+  <gameActivityClassAdditions>
+    <insert>
+      //File picDir  = new File("../../../RisingBirds/Saved/Screenshots/Android" + "/myPic");
+      //File picFile = new File(picDir + "/" + "Game" + ".png");
+
+      // Method to share either text or URL.
+      //private void AndroidThunkJava_Sharing_ShareTextUrl(String Subject, String Message, String Url) {}
+
+
+      private void AndroidThunkJava_Sharing_ShareTextUrl(String Subject, String Message ) {
+      String Title = Subject;
+      //String Link = Url;
+      String MessageText = Message;
+      //String ShareText = MessageText + Link;
+
+      Intent share = new Intent(android.content.Intent.ACTION_SEND);
+      share.setType("text/plain");
+      //share.setType("text/html");
+      share.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+
+      // Add data to the intent, the receiving app will decide
+      // what to do with it.
+      share.putExtra(Intent.EXTRA_SUBJECT, Title);
+      share.putExtra(Intent.EXTRA_TEXT, MessageText);
+      //share.putExtra(Intent.EXTRA_TEXT, Link);
+
+      startActivity(Intent.createChooser(share, "Share via"));
+      }
+
+
+      //Method to share Text and image
+
+      private void AndroidThunkJava_Sharing_ShareScreenshotText(String Subject, String Message, String AppName, String Filename  ) {
+
+      String Title = Subject;
+
+      String MessageText = Message;
+
+
+      //Log.debug("Package Name is" + getPackageName());
+
+
+      //Log.debug("Data Directory is" + getFilesDir().getAbsolutePath()); //getFilesDir().getAbsolutePath(),Environment.getDataDirectory()
+
+
+      //File picDir = new File(getFilesDir(), internal_images);
+      //picDir.mkdir();
+
+      //File picFile = new File(picDir.getPath() + "Game.png");
+
+      //String dirpath = this.getFilesDir() + File.separator + "images";
+
+      ////////////////Environment.getExternalStorageDirectory()
+
+      //File dirpath = new File(getFilesDir(), "images");//File provider
+      //Log.debug("dirpath is" + "/" + dirpath.toString() + dirpath.exists());
+
+      File dirpath = new File(Environment.getExternalStorageDirectory().getPath());//file provider
+      //Log.debug("dirpath is" + "/" + dirpath.toString() + dirpath.exists());
+
+      File picFile = new File(dirpath.getPath(), "UE4Game" +"/" + AppName + "/" + AppName + "/" + "Saved/Screenshots/Android" + "/" + "Game.png");
+      //Log.debug("picFile is" + "/" + picFile.toString() + picFile.exists());
+
+
+      //Uri uri = FileProvider.getUriForFile(this, "com.PandoraEntertainmentLtd.RisingBirds.fileprovider", picFile); //File provider
+      //Log.debug("UriName is" + "/" + uri.toString());
+
+
+      //Log.debug("Root Directory is" + Environment.getRootDirectory()); //getDataDirectory()
+      //Log.debug("External Directory is" + Environment.getExternalStorageDirectory()); //picDir.getAbsolutePath()
+
+
+      Intent intent = new Intent();
+      intent.setAction(Intent.ACTION_SEND);
+      intent.putExtra(Intent.EXTRA_SUBJECT, Title);
+      intent.putExtra(Intent.EXTRA_TEXT, MessageText);
+      //intent.putExtra(Intent.EXTRA_SUBJECT, shareNote.getTitle());
+      //intent.putExtra(Intent.EXTRA_TEXT, shareNote.getTitle());
+      intent.setType("image/*");
+      intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(picFile));
+      //intent.putExtra(Intent.EXTRA_STREAM, Uri.parse(picFile.getAbsolutePath()));
+      intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+      startActivity(Intent.createChooser(intent, "Share via"));
+      //this.startActivity(intent);
+
+      }
+
+      /////////////////////////////////
+
+      /*
+
+      // Method to share any image.
+      private void AndroidThunkJava_Sharing_shareImage() {
+      Intent share = new Intent(Intent.ACTION_SEND);
+
+      // If you want to share a png image only, you can do:
+      // setType("image/png"); OR for jpeg: setType("image/jpeg");
+      share.setType("image/*");
+
+      // Make sure you put example png image named myImage.png in your
+      // directory
+      String imagePath = Environment.getExternalStorageDirectory()
+      + "/myImage.png";
+
+      File imageFileToShare = new File(imagePath);
+
+      Uri uri = Uri.fromFile(imageFileToShare);
+      share.putExtra(Intent.EXTRA_STREAM, uri);
+
+      startActivity(Intent.createChooser(share, "Share Image!"));
+      }
+
+      //public void AndroidThunkJava_Sharing_ShowV4VCReward(String ZoneId){}
+      //View view1 = getWindow().getDecorView().getRootView();
+
+      //Screenshot sharing
+      public void AndroidThunkJava_Sharing_ShareScreenshot(String Subject, String Message, String Url)
+      {
+      String Title = Subject;
+      String Link = Url;
+      String MessageText = Message;
+
+      //View view =  findViewById(R.id.layout);//your layout id
+      //view.getRootView();
+      View view = getWindow().getDecorView().getRootView();
+      String state = Environment.getExternalStorageState();
+      if (Environment.MEDIA_MOUNTED.equals(state))
+      {
+      //File picDir  = new File(Environment.getExternalStorageDirectory()+ "/myPic");
+      picDir  = new File(Environment.getExternalStorageDirectory()+ "/myPic");
+      if (!picDir.exists())
+      {
+      picDir.mkdir();
+      }
+      view.setDrawingCacheEnabled(true);
+      view.buildDrawingCache(true);
+      Bitmap bitmap = view.getDrawingCache();
+      //          Date date = new Date();
+      String fileName = "myscreenshot" + ".jpg";
+      //File picFile = new File(picDir + "/" + fileName);
+      picFile = new File(picDir + "/" + fileName);
+      try
+      {
+      picFile.createNewFile();
+      FileOutputStream picOut = new FileOutputStream(picFile);
+      bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), (int)(bitmap.getHeight()/1.2));
+      boolean saved = bitmap.compress(Bitmap.CompressFormat.JPEG, 100, picOut);
+      if (saved)
+      {
+      //Toast.makeText(getApplicationContext(), "Image saved to your device Pictures "+ "directory!", Toast.LENGTH_SHORT).show();
+      } else
+      {
+      //Error
+      }
+      picOut.close();
+      }
+      catch (Exception e)
+      {
+      e.printStackTrace();
+      }
+      view.destroyDrawingCache();
+      } else {
+      //Error
+
+      }
+
+
+
+
+      Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+      sharingIntent.putExtra(Intent.EXTRA_SUBJECT, Title);
+      sharingIntent.putExtra(Intent.EXTRA_TEXT, Link);
+      sharingIntent.setType("image/jpeg");
+      sharingIntent.putExtra(Intent.EXTRA_STREAM, Uri.parse(picFile.getAbsolutePath()));
+      startActivity(Intent.createChooser(sharingIntent, "Share via"));
+      }
+
+      */
+
+
+    </insert>
+  </gameActivityClassAdditions>
+
+
+
+
+  <!-- optional additions to GameActivity onCreate metadata reading in GameActivity.java -->
+  <gameActivityReadMetadataAdditions>
+    <insert>
+      
+    </insert>
+  </gameActivityReadMetadataAdditions>
+
+  <!-- optional additions to GameActivity onCreate in GameActivity.java -->
+  <gameActivityOnCreateAdditions>
+  </gameActivityOnCreateAdditions>
+
+  <!-- optional additions to GameActivity onDestroy in GameActivity.java -->
+  <gameActivityOnDestroyAdditions>
+    <insert>
+
+    </insert>
+  </gameActivityOnDestroyAdditions>
+
+
+  <!-- optional additions to GameActivity onStart in GameActivity.java -->
+  <gameActivityOnStartAdditions>
+    <insert>
+
+    </insert>
+  </gameActivityOnStartAdditions>
+
+  <!-- optional additions to GameActivity onStop in GameActivity.java -->
+  <gameActivityOnStopAdditions>
+    <insert>
+
+    </insert>
+  </gameActivityOnStopAdditions>
+
+
+  <!-- optional additions to GameActivity onPause in GameActivity.java	-->
+  <gameActivityOnPauseAdditions>
+    <insert>
+      
+    </insert>
+  </gameActivityOnPauseAdditions>
+
+
+  <!-- optional additions to GameActivity onResume in GameActivity.java	-->
+  <gameActivityOnResumeAdditions>
+    <insert>
+      
+    </insert>
+  </gameActivityOnResumeAdditions>
+
+
+  <!-- optional additions to GameActivity onActivityResult in GameActivity.java -->
+  <gameActivityOnActivityResultAdditions>
+  </gameActivityOnActivityResultAdditions>
+
+
+  <!-- optional libraries to load in GameActivity.java before libUE4.so -->
+  <soLoadLibrary>
+    <!-- need this if plugin enabled and supported architecture, even if not packaged for GearVR -->
+    <!-- 	<if condition="bSupported">
+			<true>
+				<loadLibrary name="vrapi" failmsg="GearVR library not loaded and required!" />
+			</true>
+		</if> -->
+  </soLoadLibrary>
+
+ 
+</root>
