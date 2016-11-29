@@ -119,7 +119,7 @@
       File dirpath = new File(Environment.getExternalStorageDirectory().getPath());//file provider
       //Log.debug("dirpath is" + "/" + dirpath.toString() + dirpath.exists());
 
-      File picFile = new File(dirpath.getPath(), "UE4Game" +"/" + AppName + "/" + AppName + "/" + "Saved/Screenshots/Android" + "/" + "Game.png");
+      File picFile = new File(dirpath.getPath(), "UE4Game" +"/" + AppName + "/" + AppName + "/" + "Saved/Screenshots/Android" + "/" + Filename);
       //Log.debug("picFile is" + "/" + picFile.toString() + picFile.exists());
 
 
