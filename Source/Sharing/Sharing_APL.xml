@@ -25,14 +25,9 @@
   <!-- optional additions to proguard -->
   <proguardAdditions>
     <insert>
-      <!-- -keep class com.oculus.** {
-   *;
-}
--keep class android.app.** {
-   *;
-} -->
-
-     
+	-keepclassmembers public class com.epicgames.ue4.GameActivity {
+    *;
+	}
     </insert>
   </proguardAdditions>
 
